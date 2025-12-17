@@ -11,17 +11,25 @@ function App() {
 
   return (
   <>
-  
-  <h1 className="text-amber-500 bg-black " >
-    i am  new Sugat
-  </h1>
-{/* <Navlinks />
+  <div className="flex lg:flex-row flex-col items-start w-[100%]" >
+    <Navlinks />
   <ChatList />
   <ChatBox />
-
-  <Login /> */}
+  </div>
   
-  <Register />
+
+
+
+<div>
+  {/* <Login />  */}
+  
+  {/* <Register /> */}
+
+
+</div>
+
+
+
   {/* <SearchModel /> */}
   
   </>
