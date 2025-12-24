@@ -103,5 +103,6 @@ const chatsData = [
       },
     ],
   },
+  
 ];
 export default chatsData;
