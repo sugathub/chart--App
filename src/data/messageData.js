@@ -1,4 +1,4 @@
-const messageData = [
+export const messageData = [
   {
     timestamp: { seconds: 1738417842, nanoseconds: 818000000 },
     sender: "ryporotap@mailinator.com",
@@ -101,4 +101,3 @@ const messageData = [
   },
 ];
 
-export default messageData;

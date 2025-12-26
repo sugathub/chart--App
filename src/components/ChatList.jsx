@@ -21,6 +21,7 @@ const ChatList = () => {
      return bTimestamp- aTimestamp;
     })
   },[chats])
+  
 
   return (
     <section className="relative hidden lg:flex flex-col bg-white h-screen w-full md:w-[600px]">
