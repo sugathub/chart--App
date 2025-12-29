@@ -1,137 +1,122 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import defaultAvatar from "../assets/defaultAvatar.png";
 import { RiSendPlaneFill } from "react-icons/ri";
 import { messageData } from "../data/messageData";
-import { formatTimestamp } from '../utils/formatTimestamp';
+import { formatTimestamp } from "../utils/formatTimestamp";
 
 const ChatBox = () => {
-
   const [message, setMessages] = useState([]);
   const [messageText, sendMessageText] = useState("");
 
   const senderEmail = "baxo@mailinator.com";
   const scrollRef = useRef(null);
+
   useEffect(() => {
     setMessages(messageData);
   }, []);
-  useEffect(()=>{
-        if(scrollRef.current){
-          scrollRef.current = scrollRef.scrollHeight 
-        }
 
-  },[message])
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [message]);
 
   const sortedMessage = useMemo(() => {
     return [...message].sort((a, b) => {
-      const aTimestamp =
-        a.timestamp.seconds +
-        a.timestamp.nanoseconds / 1e9;
-      const bTimestamp =
-        b.timestamp.seconds +
-        b.timestamp.nanoseconds / 1e9;
-      return aTimestamp  + bTimestamp;
+      const aTime = a.timestamp.seconds + a.timestamp.nanoseconds / 1e9;
+      const bTime = b.timestamp.seconds + b.timestamp.nanoseconds / 1e9;
+      return aTime - bTime;
     });
   }, [message]);
 
-  const handleSendMessage = (e) =>{
+  const handleSendMessage = (e) => {
     e.preventDefault();
+    if (!messageText.trim()) return;
+
     const newMessage = {
       sender: senderEmail,
       text: messageText,
       timestamp: {
-        seconds :Math.floor(DataTransfer.now()/1000),
+        seconds: Math.floor(Date.now() / 1000),
         nanoseconds: 0,
       },
-
     };
-     setMessages((prevMessages)=>[...prevMessages, newMessage ]);
-     setMessageText("")
+
+    setMessages((prev) => [...prev, newMessage]);
+    sendMessageText("");
   };
-  
 
   return (
+    <section className="flex flex-col h-screen w-full">
 
-    <section className='flex flex-col items-start justify-start h-screen w-[100% background-image' >
-      <header className='border-b border-gray-400 w-[100%] h-[79px] m:h-fit p-4 bg-wite ' >
-        <main className=' custom-scrollbar flex items-center gap-3 ' >
-          <span>
-            <img src={defaultAvatar} className='w-11 h-11 object-cover rounded-full' alt="" />
-          </span>
-          <span>
-            <h3 className='font-semibold text-[#2A3D39] text-lg' >Chatfrik User</h3>
-            <p className='font-light text-[#2A3D39] text-sm' >@chatfri</p>
-
-          </span>
-        </main>
-      </header>
-      <main className='relative h-[100vh] w-full flex flex-col justify-between ' >
-        <section className='px-3 pt-5 b-20 lg:pb-10' >
-          <div ref={scrollRef} className='overflow-auto h-[80vh] ' >
-            {sortedMessage?.map((msg, index) => (
-              <> 
-              {msg?.sender === senderEmail ? <div className='flex flex-col items-end w-full ' >
-                <span className='flex gap-3 me-10 h-auto' >
-                  <div className='h-auto'>
-                    <div className='flex items-center bg-white justify-center p-6 rounded-lg  shadow-sm' >
-                      <h4 className='font-medium text-[17px] text-gray-800  w-full wrap-break-word' >{msg.text} </h4>
-                    </div>
-                    <p className=' text-gary-400  text-sx  mt-3  text-right'>{formatTimestamp(msg?.timestamp)}  </p>
-                  </div>
-
-                </span>
-
-              </div> :   <div className='flex flex-col items-start w-full ' >
-
-                  <span className='flex gap-0-3 w-[40%] h-auto ms-10 ' >
-                    <img src={defaultAvatar} className='h-11 w-11 object-cover rounded-full ' alt="" />
-                    <div>
-                      <div className='flex items-center ' >
-                        <h4>{msg.text}</h4>
-                      </div>
-
-                      <p className=' text-gary-400  text-sx mt-3  '>{formatTimestamp(msg?.timestamp)} </p>
-
-                    </div>
-                  </span>
-                </div>
-              
-              }
-              
-               
-
-
-
-
-             
-
-              </>
-            ))}
-
-
-
-
-
-          </div>
-
-        </section>
-
-
-        <div className='sticky  lg:bottom-0 bottom-[60px] p-3 h-fit w-[100%] ' >
-          <form onSubmit={handleSendMessage} action="" className='flex items-center bg-white h-[45px] w-[100%] px-2 rounded-lg relative shadow-lg '>
-            <input value={messageText} onClick={(e)=> sendMessageText(e.target.value)} className='h-full text-[#2A3D39] outline-none text-[16px] pl-3 pr-[50px] rounded-lg w-[100%] ' type="text" name="" id="" placeholder='Write your message...' />
-            <button type='submit' className='flex items-center justify-center absolute right-3 p-2 rounded-full bg-[#D9f2ed] hover:bg-[#c8eae3] ' >
-              <RiSendPlaneFill color='#01AA85' />
-            </button>
-          </form>
-
+      {/* ✅ HEADER */}
+      <header className="border-b border-gray-300 p-4 bg-white flex items-center gap-3">
+        <img
+          src={defaultAvatar}
+          alt="User"
+          className="w-11 h-11 rounded-full object-cover"
+        />
+        <div>
+          <h3 className="font-semibold text-lg text-gray-800">
+            Chatfrik User
+          </h3>
+          <p className="text-sm text-gray-500">@chatfrik</p>
         </div>
+      </header>
 
+      {/* ✅ MESSAGES */}
+      <div ref={scrollRef} className="overflow-auto flex-1 px-3 pt-5">
+        {sortedMessage.map((msg, index) => (
+          <div key={`${msg.timestamp.seconds}-${index}`}>
+            {msg.sender === senderEmail ? (
+              <div className="flex justify-end mb-4">
+                <div>
+                  <p className="bg-white p-4 rounded-lg shadow">
+                    {msg.text}
+                  </p>
+                  <small className="text-gray-400 block text-right">
+                    {formatTimestamp(msg.timestamp)}
+                  </small>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-start mb-4 gap-2">
+                <img
+                  src={defaultAvatar}
+                  className="w-10 h-10 rounded-full"
+                  alt=""
+                />
+                <div>
+                  <p className="bg-white p-4 rounded-lg shadow">
+                    {msg.text}
+                  </p>
+                  <small className="text-gray-400">
+                    {formatTimestamp(msg.timestamp)}
+                  </small>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
 
-      </main>
-
-
+      {/* ✅ INPUT */}
+      <form
+        onSubmit={handleSendMessage}
+        className="flex items-center bg-white p-3 shadow"
+      >
+        <input
+          value={messageText}
+          onChange={(e) => sendMessageText(e.target.value)}
+          className="flex-1 outline-none"
+          placeholder="Write your message..."
+        />
+        <button type="submit">
+          <RiSendPlaneFill color="#01AA85" />
+        </button>
+      </form>
     </section>
-  )
-}
+  );
+};
 
-export default ChatBox
+export default ChatBox;
