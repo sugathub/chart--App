@@ -14,14 +14,20 @@ const ChatList = () => {
     setChats(chatData || []);
   }, []);
 
-  const sortecdChats = useMemo(() =>{
-    return [...chats].sort((a,b)=>{
-     const aTimestamp = a.lastMessageTimestamp.seconds + a.lastMessageTimestamp.nanoseconds/1e9;
-    const bTimestamp = b.lastMessageTimestamp.seconds + b.lastMessageTimestamp.nanoseconds/1e9
-     return bTimestamp- aTimestamp;
-    })
-  },[chats])
-  
+  // ✅ Sort chats by latest message time
+  const sortedChats = useMemo(() => {
+    return [...chats].sort((a, b) => {
+      const aTimestamp =
+        a.lastMessageTimestamp.seconds +
+        a.lastMessageTimestamp.nanoseconds / 1e9;
+
+      const bTimestamp =
+        b.lastMessageTimestamp.seconds +
+        b.lastMessageTimestamp.nanoseconds / 1e9;
+
+      return bTimestamp - aTimestamp;
+    });
+  }, [chats]);
 
   return (
     <section className="relative hidden lg:flex flex-col bg-white h-screen w-full md:w-[600px]">
@@ -64,7 +70,7 @@ const ChatList = () => {
 
       {/* Chat List */}
       <main className="flex-1 overflow-y-auto">
-        {sortecdChats?.map((chat) => {
+        {sortedChats.map((chat) => {
           const otherUser =
             chat?.users?.find(
               (user) => user.email !== CURRENT_USER_EMAIL
@@ -72,8 +78,8 @@ const ChatList = () => {
 
           return (
             <button
+              key={chat.id} // ✅ UNIQUE & STABLE KEY
               type="button"
-              key={chat.uid}
               className="flex items-start justify-between w-full border-b border-[#90902c62] px-5 py-3 hover:bg-gray-50"
             >
               <div className="flex items-start gap-3">
@@ -84,7 +90,7 @@ const ChatList = () => {
                 />
 
                 <div>
-                  <h2 className="p-0 font-semibold text-[#2A3d39] text-left text-[17px] ">
+                  <h2 className="font-semibold text-[#2A3d39] text-left text-[17px]">
                     {otherUser.fullName || "ChatFrik User"}
                   </h2>
                   <p className="text-[#2A3D39] text-[14px] font-light truncate max-w-[220px]">

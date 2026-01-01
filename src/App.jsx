@@ -6,14 +6,20 @@ import Navlinks from "./components/Navlinks";
 import Register from "./components/Register";
 // import SearchModel from "./components/SearchModel";
 import { auth } from "./firebase/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 function App() {
   const [islogin, setIslogin] = useState(true);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
-      setUser(currentUser);
+    const currentUser = auth.currentUser;
+
+    if(currentUser) {
+      onAuthStateChanged(currentUser);
+    }
+    const unsubscribe = auth.onAuthStateChanged((user) =>{
+      setUser(user);
     });
 
     return () => unsubscribe();
