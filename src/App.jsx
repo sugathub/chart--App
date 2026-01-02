@@ -7,6 +7,7 @@ import Register from "./components/Register";
 // import SearchModel from "./components/SearchModel";
 import { auth } from "./firebase/firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import SearchModel from "./components/SearchModel";
 
 function App() {
   const [islogin, setIslogin] = useState(true);
@@ -39,9 +40,10 @@ function App() {
             <Login islogin={islogin} setIslogin={setIslogin} />
           ) : (
             <Register islogin={islogin} setIslogin={setIslogin} />
+           
           )}
         </div>
-      )}
+      )} <SearchModel />
     </div>
   );
 }

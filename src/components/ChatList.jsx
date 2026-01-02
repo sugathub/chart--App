@@ -4,6 +4,7 @@ import { RiMore2Fill } from "react-icons/ri";
 import SearchModel from "./SearchModel";
 import { formatTimestamp } from "../utils/formatTimestamp";
 import chatData from "../data/chatsData";
+import { listenForChats } from "../firebase/firebase";
 
 const CURRENT_USER_EMAIL = "baxo@mailinator.com";
 
@@ -11,7 +12,11 @@ const ChatList = () => {
   const [chats, setChats] = useState([]);
 
   useEffect(() => {
-    setChats(chatData || []);
+   const unsubscribe = listenForChats(setChats);
+
+   return () =>{
+    unsubscribe();
+   };
   }, []);
 
   // ✅ Sort chats by latest message time

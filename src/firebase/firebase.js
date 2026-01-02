@@ -1,14 +1,17 @@
-// Import the functions you need from the SDKs you need
+// Import Firebase core
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import {getFirestore} from "firebase/firestore";
+
+// Import Firestore functions
+import {
+  getFirestore,
+  collection,
+  onSnapshot
+} from "firebase/firestore";
+
+// Import Auth
 import { getAuth } from "firebase/auth";
 
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyBAW0J8eyyPg2J_I4L7s4JDTvkSAN7lZ4Y",
   authDomain: "app-chat-native.firebaseapp.com",
@@ -21,8 +24,30 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
 
+// Initialize services
+export const auth = getAuth(app);
+export const db = getFirestore(app);
 
-export {auth,db}
+// ✅ FIXED LISTENER
+export const listenForChats = (setChats) => {
+  const chatsRef = collection(db, "chats");
+
+  const unsubscribe = onSnapshot(chatsRef, (snapshot) => {
+    const chatList = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    const filteredChats = chatList.filter(
+      (chat) =>
+        chat?.users?.some(
+          (user) => user.email === auth.currentUser?.email
+        )
+    );
+
+    setChats(filteredChats);
+  });
+
+  return unsubscribe;
+};
