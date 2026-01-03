@@ -8,15 +8,15 @@ import { listenForChats } from "../firebase/firebase";
 
 const CURRENT_USER_EMAIL = "baxo@mailinator.com";
 
-const ChatList = () => {
+const ChatList = ({ setSelectedUser }) => {
   const [chats, setChats] = useState([]);
 
   useEffect(() => {
-   const unsubscribe = listenForChats(setChats);
+    const unsubscribe = listenForChats(setChats);
 
-   return () =>{
-    unsubscribe();
-   };
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   // ✅ Sort chats by latest message time
@@ -34,13 +34,16 @@ const ChatList = () => {
     });
   }, [chats]);
 
-  const startChart = () =>{
-    alert("chart started");
+  const startChart = (user) => {
+    setSelectedUser(user);
+
+
+
   }
 
   return (
     <section className="relative hidden lg:flex flex-col bg-white h-screen w-full md:w-[600px]">
-      
+
       {/* Top Header */}
       <header className="flex items-center justify-between border-b border-[#676767b9] p-4 sticky top-0 z-[100] bg-white">
         <div className="flex items-center gap-3">

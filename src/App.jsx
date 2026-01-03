@@ -12,6 +12,7 @@ import SearchModel from "./components/SearchModel";
 function App() {
   const [islogin, setIslogin] = useState(true);
   const [user, setUser] = useState(null);
+  const [selectedUser,setSelectedUser] = useState(null);
 
   useEffect(() => {
     const currentUser = auth.currentUser;
@@ -31,8 +32,8 @@ function App() {
       {user ? (
         <div className="flex lg:flex-row flex-col items-start w-full">
           <Navlinks />
-          <ChatList />
-          <ChatBox />
+          <ChatList  setSelectedUser = {setSelectedUser} />
+          <ChatBox selectedUser={selectedUser} />
         </div>
       ) : (
         <div>

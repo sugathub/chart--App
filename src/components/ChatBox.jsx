@@ -4,7 +4,7 @@ import { RiSendPlaneFill } from "react-icons/ri";
 import { messageData } from "../data/messageData";
 import { formatTimestamp } from "../utils/formatTimestamp";
 
-const ChatBox = () => {
+const ChatBox = ({ selectedUser }) => {
   const [message, setMessages] = useState([]);
   const [messageText, sendMessageText] = useState("");
 
@@ -52,17 +52,17 @@ const ChatBox = () => {
       {/* ✅ HEADER */}
       <header className="border-b border-gray-300 p-4 bg-white flex items-center gap-3">
         <img
-          src={defaultAvatar}
+          src={ selectedUser?.image ||  defaultAvatar}
           alt="User"
           className="w-11 h-11 rounded-full object-cover"
         />
         <div>
           <h3 className="font-semibold text-lg text-gray-800">
-            Chatfrik User
+            {selectedUser?.fullName || "Chatfrik User" }
           </h3>
-          <p className="text-sm text-gray-500">@chatfrik</p>
+          <p className="text-sm text-gray-500">   {selectedUser?.username || "Chatfrik User" }</p>
         </div>
-      </header>
+      </header>    
 
       {/* ✅ MESSAGES */}
       <div ref={scrollRef} className="overflow-auto flex-1 px-3 pt-5">
