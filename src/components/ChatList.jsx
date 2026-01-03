@@ -34,6 +34,10 @@ const ChatList = () => {
     });
   }, [chats]);
 
+  const startChart = () =>{
+    alert("chart started");
+  }
+
   return (
     <section className="relative hidden lg:flex flex-col bg-white h-screen w-full md:w-[600px]">
       
@@ -69,7 +73,7 @@ const ChatList = () => {
           <h3 className="font-semibold text-[#2A3D39]">
             Messages <span className="font-normal">({chats.length})</span>
           </h3>
-          <SearchModel />
+          <SearchModel startChats={startChart} />
         </div>
       </div>
 
