@@ -5,8 +5,9 @@ import SearchModel from "./SearchModel";
 import { formatTimestamp } from "../utils/formatTimestamp";
 import chatData from "../data/chatsData";
 import { listenForChats } from "../firebase/firebase";
+import { auth } from "../firebase/firebase";
 
-const CURRENT_USER_EMAIL = "baxo@mailinator.com";
+const currentUserEmail = auth.currentUser?.email;
 
 const ChatList = ({ setSelectedUser }) => {
   const [chats, setChats] = useState([]);
@@ -20,19 +21,22 @@ const ChatList = ({ setSelectedUser }) => {
   }, []);
 
   // ✅ Sort chats by latest message time
-  const sortedChats = useMemo(() => {
-    return [...chats].sort((a, b) => {
-      const aTimestamp =
-        a.lastMessageTimestamp.seconds +
-        a.lastMessageTimestamp.nanoseconds / 1e9;
+ const sortedChats = useMemo(() => {
+  return [...chats].sort((a, b) => {
+    if (!a.lastMessageTimestamp || !b.lastMessageTimestamp) return 0;
 
-      const bTimestamp =
-        b.lastMessageTimestamp.seconds +
-        b.lastMessageTimestamp.nanoseconds / 1e9;
+    const aTime =
+      a.lastMessageTimestamp.seconds +
+      a.lastMessageTimestamp.nanoseconds / 1e9;
 
-      return bTimestamp - aTimestamp;
-    });
-  }, [chats]);
+    const bTime =
+      b.lastMessageTimestamp.seconds +
+      b.lastMessageTimestamp.nanoseconds / 1e9;
+
+    return bTime - aTime;
+  });
+}, [chats]);
+
 
   const startChart = (user) => {
     setSelectedUser(user);
@@ -85,7 +89,7 @@ const ChatList = ({ setSelectedUser }) => {
         {sortedChats.map((chat) => {
           const otherUser =
             chat?.users?.find(
-              (user) => user.email !== CURRENT_USER_EMAIL
+              (user) =>user.email !== currentUserEmail
             ) || {};
 
           return (

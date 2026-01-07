@@ -3,13 +3,20 @@ import defaultAvatar from "../assets/defaultAvatar.png";
 import { RiSendPlaneFill } from "react-icons/ri";
 import { messageData } from "../data/messageData";
 import { formatTimestamp } from "../utils/formatTimestamp";
+import { auth, sendMessage } from "../firebase/firebase";
 
 const ChatBox = ({ selectedUser }) => {
   const [message, setMessages] = useState([]);
   const [messageText, sendMessageText] = useState("");
+  
 
-  const senderEmail = "baxo@mailinator.com";
   const scrollRef = useRef(null);
+
+
+  const chatId = auth?.currentUser?.uid < selectedUser?.uid ? `${auth.currentUser?.uid}-${selectedUser.uid}` : `${selectedUser?.uid}- ${auth.currentUser?.uid}`;
+  const user1 = auth?.currentUser;
+  const user2 = selectedUser;
+  const senderEmail = auth?.currentUser?.email;
 
   useEffect(() => {
     setMessages(messageData);
@@ -41,6 +48,7 @@ const ChatBox = ({ selectedUser }) => {
         nanoseconds: 0,
       },
     };
+    sendMessage(messageText, chatId, user1?.uid, user2?.uid);
 
     setMessages((prev) => [...prev, newMessage]);
     sendMessageText("");
@@ -52,17 +60,17 @@ const ChatBox = ({ selectedUser }) => {
       {/* ✅ HEADER */}
       <header className="border-b border-gray-300 p-4 bg-white flex items-center gap-3">
         <img
-          src={ selectedUser?.image ||  defaultAvatar}
+          src={selectedUser?.image || defaultAvatar}
           alt="User"
           className="w-11 h-11 rounded-full object-cover"
         />
         <div>
           <h3 className="font-semibold text-lg text-gray-800">
-            {selectedUser?.fullName || "Chatfrik User" }
+            {selectedUser?.fullName || "Chatfrik User"}
           </h3>
-          <p className="text-sm text-gray-500">   {selectedUser?.username || "Chatfrik User" }</p>
+          <p className="text-sm text-gray-500">   {selectedUser?.username || "Chatfrik User"}</p>
         </div>
-      </header>    
+      </header>
 
       {/* ✅ MESSAGES */}
       <div ref={scrollRef} className="overflow-auto flex-1 px-3 pt-5">
@@ -103,7 +111,7 @@ const ChatBox = ({ selectedUser }) => {
       {/* ✅ INPUT */}
       <form
         onSubmit={handleSendMessage}
-        className="flex items-center bg-white p-3 shadow"
+        className="flex items-center bg-white p-3 shadow "
       >
         <input
           value={messageText}
@@ -111,7 +119,7 @@ const ChatBox = ({ selectedUser }) => {
           className="flex-1 outline-none"
           placeholder="Write your message..."
         />
-        <button type="submit">
+        <button type="submit" className="cursor-pointer">
           <RiSendPlaneFill color="#01AA85" />
         </button>
       </form>
