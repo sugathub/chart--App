@@ -57,11 +57,11 @@ const Navlinks = () => {
            </li> 
            
                
-           
-        </ul>
-         <button className=' block lg:hidden lg:text-[28px] text-[22px] cursor-pointer '>
+          <li> <button className=' block lg:hidden lg:text-[28px] text-[22px] cursor-pointer '>
                 <RiArrowDownSLine color='#ffff' />
-              </button>   
+              </button></li>   
+        </ul>
+         
       </main>
     </section>
   )

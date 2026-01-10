@@ -3,65 +3,80 @@ import defaultAvatar from "../assets/defaultAvatar.png";
 import { RiMore2Fill } from "react-icons/ri";
 import SearchModel from "./SearchModel";
 import { formatTimestamp } from "../utils/formatTimestamp";
-import chatData from "../data/chatsData";
-import { listenForChats } from "../firebase/firebase";
+import { db, listenForChats } from "../firebase/firebase";
 import { auth } from "../firebase/firebase";
-
-const currentUserEmail = auth.currentUser?.email;
+import { doc, onSnapshot } from "firebase/firestore";
 
 const ChatList = ({ setSelectedUser }) => {
   const [chats, setChats] = useState([]);
+  const [user, setUser] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
 
+  // ✅ Track auth state to get current user ID safely
   useEffect(() => {
-    const unsubscribe = listenForChats(setChats);
+    const unsubscribeAuth = auth.onAuthStateChanged((currentUser) => {
+      if (currentUser) setCurrentUserId(currentUser.uid);
+      else setCurrentUserId(null);
+    });
+    return unsubscribeAuth;
+  }, []);
 
-    return () => {
-      unsubscribe();
-    };
+  // ✅ Listen for current user's document after currentUserId is available
+  useEffect(() => {
+    if (!currentUserId) return;
+
+    const userDocRef = doc(db, "users", currentUserId);
+    const unsubscribeUser = onSnapshot(userDocRef, (docSnap) => {
+      setUser(docSnap.data());
+    });
+
+    return unsubscribeUser;
+  }, [currentUserId]);
+
+  // ✅ Listen for chats
+  useEffect(() => {
+    const unsubscribeChats = listenForChats(setChats);
+    return () => unsubscribeChats && unsubscribeChats();
   }, []);
 
   // ✅ Sort chats by latest message time
- const sortedChats = useMemo(() => {
-  return [...chats].sort((a, b) => {
-    if (!a.lastMessageTimestamp || !b.lastMessageTimestamp) return 0;
+  const sortedChats = useMemo(() => {
+    return [...chats].sort((a, b) => {
+      if (!a.lastMessageTimestamp || !b.lastMessageTimestamp) return 0;
 
-    const aTime =
-      a.lastMessageTimestamp.seconds +
-      a.lastMessageTimestamp.nanoseconds / 1e9;
+      const aTime =
+        a.lastMessageTimestamp.seconds +
+        a.lastMessageTimestamp.nanoseconds / 1e9;
 
-    const bTime =
-      b.lastMessageTimestamp.seconds +
-      b.lastMessageTimestamp.nanoseconds / 1e9;
+      const bTime =
+        b.lastMessageTimestamp.seconds +
+        b.lastMessageTimestamp.nanoseconds / 1e9;
 
-    return bTime - aTime;
-  });
-}, [chats]);
+      return bTime - aTime;
+    });
+  }, [chats]);
 
-
-  const startChart = (user) => {
-    setSelectedUser(user);
-
-
-
-  }
+  // ✅ Handle selecting a chat
+  const startChat = (otherUser) => {
+    setSelectedUser(otherUser);
+  };
 
   return (
     <section className="relative hidden lg:flex flex-col bg-white h-screen w-full md:w-[600px]">
-
       {/* Top Header */}
       <header className="flex items-center justify-between border-b border-[#676767b9] p-4 sticky top-0 z-[100] bg-white">
         <div className="flex items-center gap-3">
           <img
-            src={defaultAvatar}
+            src={user?.image || defaultAvatar}
             className="w-[44px] h-[44px] rounded-full object-cover"
             alt="user"
           />
           <div>
             <h3 className="font-semibold text-[#2A3D39] text-[17px]">
-              Chatfrik User
+              {user?.fullName || "ChatFrik user"}
             </h3>
             <p className="text-[#2A3D39] text-[15px] font-light">
-              @chatfrik
+              {user?.username || "ChatFrik username"}
             </p>
           </div>
         </div>
@@ -80,7 +95,7 @@ const ChatList = ({ setSelectedUser }) => {
           <h3 className="font-semibold text-[#2A3D39]">
             Messages <span className="font-normal">({chats.length})</span>
           </h3>
-          <SearchModel startChats={startChart} />
+          <SearchModel startChats={startChat} />
         </div>
       </div>
 
@@ -88,15 +103,14 @@ const ChatList = ({ setSelectedUser }) => {
       <main className="flex-1 overflow-y-auto">
         {sortedChats.map((chat) => {
           const otherUser =
-            chat?.users?.find(
-              (user) =>user.email !== currentUserEmail
-            ) || {};
+            chat?.users?.find((u) => u.uid !== currentUserId) || {};
 
           return (
             <button
-              key={chat.id} // ✅ UNIQUE & STABLE KEY
+              key={chat.id} // ✅ Stable key
               type="button"
-              className="flex items-start justify-between w-full border-b border-[#90902c62] px-5 py-3 hover:bg-gray-50"
+              onClick={() => startChat(otherUser)}
+              className="flex items-start justify-between w-full border-b border-[#90902c62] px-5 py-3 hover:bg-gray-50 cursor-pointer"
             >
               <div className="flex items-start gap-3">
                 <img

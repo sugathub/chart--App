@@ -59,49 +59,59 @@ export const listenForChats = (setChats) => {
 };
 
 
-export const sendMessage = async (messageText, chatId, user1, user2) =>{
+export const sendMessage = async (messageText, user1Id, user2Id) => {
+  if (!user1Id || !user2Id) return;
 
+  const chatId = [user1Id, user2Id].sort().join("_");
   const chatRef = doc(db, "chats", chatId);
 
-  const user1Doc = await getDoc(doc(db, "users", user1));
-  const user2Doc = await getDoc(doc(db, "users", user2));
+  const user1Doc = await getDoc(doc(db, "users", user1Id));
+  const user2Doc = await getDoc(doc(db, "users", user2Id));
 
-  console.log(user1Doc);
-  console.log(user2Doc);
-
-  const user1Data = user1Doc.data();
-  const user2Data = user2Doc.data();
-
+  const user1Data = user1Doc.exists() ? user1Doc.data() : { fullName: "User1", image: "" };
+  const user2Data = user2Doc.exists() ? user2Doc.data() : { fullName: "User2", image: "" };
 
   const chatDoc = await getDoc(chatRef);
+
   if (!chatDoc.exists()) {
+    // Create chat if not exist
     await setDoc(chatRef, {
-      users: [user1Data, user2Data],
+      users: [
+        { uid: user1Id, fullName: user1Data.fullName, image: user1Data.image },
+        { uid: user2Id, fullName: user2Data.fullName, image: user2Data.image },
+      ],
       lastMessage: messageText,
       lastMessageTimestamp: serverTimestamp(),
-
-
-    },
-     { merge: true }
-  );
-  } else {
-    await updateDoc(chatRef, {
-
-      lastMessage: messageText,
-      lastMessageTimestamp: serverTimestamp(),
-
-
     });
-
+  } else {
+    // Update last message
+    await updateDoc(chatRef, {
+      lastMessage: messageText,
+      lastMessageTimestamp: serverTimestamp(),
+    });
   }
 
   const messageRef = collection(db, "chats", chatId, "messages");
-
   await addDoc(messageRef, {
-  text: messageText,
-  sender: auth.currentUser.email,
-  timestamp: serverTimestamp(),
-});
+    text: messageText,
+    senderId: auth.currentUser.uid,
+    senderEmail: auth.currentUser.email,
+    timestamp: serverTimestamp(),
+  });
+};
 
-}
+
+export const listenForMessages = (chatId, setMessages) => {
+  const chatRef = collection(db, "chats", chatId, "messages");
+
+  return onSnapshot(chatRef, (snapshot) => {
+    const messages = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    setMessages(messages);
+  });
+};
+
+
 export { auth, db };
