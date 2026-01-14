@@ -46,11 +46,12 @@ export const listenForChats = (setChats) => {
     }));
 
     const filteredChats = chatList.filter(
-      (chat) =>
-        chat?.users?.some(
-          (user) => user.email === auth.currentUser?.email
-        )
-    );
+  (chat) =>
+    chat?.users?.some(
+      (user) => user.uid === auth.currentUser?.uid
+    )
+);
+
 
     setChats(filteredChats);
   });

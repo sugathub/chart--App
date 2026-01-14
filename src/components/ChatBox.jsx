@@ -71,7 +71,7 @@ sendMessage(messageText, user1?.uid, user2?.uid);
       selectedUser ? <section className="flex flex-col h-screen w-full">
 
         {/* ✅ HEADER */}
-        <header className="border-b border-gray-300 p-4 bg-white flex items-center gap-3">
+        <header className="border-b border-gray-300 p-4 bg-white sticky flex items-center gap-3">
           <img
             src={selectedUser?.image || defaultAvatar}
             alt="User"
@@ -90,7 +90,7 @@ sendMessage(messageText, user1?.uid, user2?.uid);
           {sortedMessage.map((msg, index) => (
             <div key={`${msg.timestamp.seconds}-${msg.sender}-${index}`}
 >
-              {msg.senderEmail === senderEmail ? (
+              {msg.senderId === auth.currentUser.uid ? (
                 <div className="flex justify-end mb-4">
                   <div>
                     <p className="bg-white p-4 rounded-lg shadow">
@@ -126,7 +126,7 @@ sendMessage(messageText, user1?.uid, user2?.uid);
         {/* ✅ INPUT */}
         <form
           onSubmit={handleSendMessage}
-          className="flex items-center bg-white p-3 shadow "
+          className="flex items-center m-4 bg-white p-3  shadow "
         >
           <input
             value={messageText}
