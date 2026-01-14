@@ -143,7 +143,7 @@ sendMessage(messageText, user1?.uid, user2?.uid);
         {/* ✅ INPUT */}
       <form
   onSubmit={handleSendMessage}
-  className="sticky bottom-0 w-full flex items-center bg-white p-3 shadow-md"
+  className="sticky bottom-0 w-full flex items-center bg-white p-3 shadow-md m-2"
 >
 
           <input
