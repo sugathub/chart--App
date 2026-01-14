@@ -7,7 +7,7 @@ import { db, listenForChats } from "../firebase/firebase";
 import { auth } from "../firebase/firebase";
 import { doc, onSnapshot } from "firebase/firestore";
 
-const ChatList = ({ setSelectedUser }) => {
+const ChatList = ({ setSelectedUser, isMobileChatOpen }) => {
   const [chats, setChats] = useState([]);
   const [user, setUser] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
@@ -62,7 +62,19 @@ const ChatList = ({ setSelectedUser }) => {
   };
 
   return (
-    <section className="relative hidden lg:flex flex-col bg-white h-screen w-full md:w-[600px]">
+<section
+  className={`
+    bg-white h-screen
+    w-full lg:w-[380px]
+    flex flex-col
+    fixed lg:static
+    top-0 left-0
+    z-40
+    transition-transform duration-300
+    ${isMobileChatOpen ? "-translate-x-full lg:translate-x-0" : "translate-x-0"}
+  `}
+>
+
       {/* Top Header */}
       <header className="flex items-center justify-between border-b border-[#676767b9] p-4 sticky top-0 z-[100] bg-white">
         <div className="flex items-center gap-3">

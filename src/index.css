@@ -2,27 +2,27 @@
 
 @import "tailwindcss";
 
-body{
-
-    margin: 0;
-    padding: 0;
-    font-family: "jost",sans-serif;
-    height: 100%;
-    background-color: #01aa8529;
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "jost", sans-serif;
+  height: 100%;
+  background-color: #01aa8529;
 }
 
-.background-image{
-    background-image: url("/assets/background.png");
-    background-position: center;
-    background-size: 100% ;
-    height: 100vh;
+.background-image {
+  background-image: url("/assets/background.png");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  height: 100vh;
 }
 
-.custom-scrollbar{
-
-    overflow: scroll;
+.custom-scrollbar {
+  overflow: scroll;
 }
 
-.custom-scrollbar::-webkit-scrollbar{
-    width: 0;
+.custom-scrollbar::-webkit-scrollbar {
+  width: 0;
 }

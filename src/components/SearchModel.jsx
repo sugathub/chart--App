@@ -79,7 +79,7 @@ const SearchModel = ({ startChats }) => {
                 </h3>
                 <button
                   onClick={closeModal}
-                  className="text-white hover:bg-[#d9f2ed] hover:text-[#01AA85] rounded-lg w-8 h-8 flex items-center justify-center"
+                  className="text-white hover:bg-[#d9f2ed] hover:text-[#01AA85] rounded-lg w-8 h-8 flex items-center justify-center cursor-pointer "
                 >
                   <FaXmark size={20} />
                 </button>

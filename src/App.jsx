@@ -12,15 +12,18 @@ import SearchModel from "./components/SearchModel";
 function App() {
   const [islogin, setIslogin] = useState(true);
   const [user, setUser] = useState(null);
-  const [selectedUser,setSelectedUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  const [isMobileChatOpen, setIsMobileChatOpen] = useState(false);
+
 
   useEffect(() => {
     const currentUser = auth.currentUser;
 
-    if(currentUser) {
+    if (currentUser) {
       onAuthStateChanged(currentUser);
     }
-    const unsubscribe = auth.onAuthStateChanged((user) =>{
+    const unsubscribe = auth.onAuthStateChanged((user) => {
       setUser(user);
     });
 
@@ -30,18 +33,30 @@ function App() {
   return (
     <div>
       {user ? (
-        <div className="flex lg:flex-row flex-col items-start w-full">
-          <Navlinks />
-          <ChatList  setSelectedUser = {setSelectedUser} />
-          <ChatBox selectedUser={selectedUser} />
-        </div>
+       <div className="flex h-screen w-full overflow-hidden">
+  <Navlinks />
+
+  <ChatList
+    isMobileChatOpen={isMobileChatOpen}
+    setSelectedUser={(user) => {
+      setSelectedUser(user);
+      setIsMobileChatOpen(true);
+    }}
+  />
+
+  <ChatBox
+    selectedUser={selectedUser}
+    setIsMobileChatOpen={setIsMobileChatOpen}
+  />
+</div>
+
       ) : (
         <div>
           {islogin ? (
             <Login islogin={islogin} setIslogin={setIslogin} />
           ) : (
             <Register islogin={islogin} setIslogin={setIslogin} />
-           
+
           )}
         </div>
       )} <SearchModel />

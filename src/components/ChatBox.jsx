@@ -6,7 +6,7 @@ import { formatTimestamp } from "../utils/formatTimestamp";
 import { auth, sendMessage, listenForMessages } from "../firebase/firebase";
 import logo from "../assets/logo.png"
 
-const ChatBox = ({ selectedUser }) => {
+const ChatBox = ({ selectedUser, setIsMobileChatOpen }) => {
   const [message, setMessages] = useState([]);
   const [messageText, sendMessageText] = useState("");
 
@@ -68,10 +68,26 @@ sendMessage(messageText, user1?.uid, user2?.uid);
 
   return (
     <>{
-      selectedUser ? <section className="flex flex-col h-screen w-full">
+      selectedUser ? <section
+    className={`
+    flex flex-col
+    h-screen w-full
+    fixed lg:static
+    top-0 left-0
+    bg-[#e5f6f3]
+    z-30
+    ${!selectedUser ? "hidden lg:flex" : "flex"}
+  `}
+>
 
         {/* ✅ HEADER */}
         <header className="border-b border-gray-300 p-4 bg-white sticky flex items-center gap-3">
+          <button
+    onClick={() => setIsMobileChatOpen(false)}
+    className="lg:hidden mr-3 text-xl font-bold"
+  >
+    ←
+  </button>
           <img
             src={selectedUser?.image || defaultAvatar}
             alt="User"
@@ -86,7 +102,8 @@ sendMessage(messageText, user1?.uid, user2?.uid);
         </header>
 
         {/* ✅ MESSAGES */}
-        <div ref={scrollRef} className="overflow-auto flex-1 px-3 pt-5">
+       <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 pt-4 pb-24">
+
           {sortedMessage.map((msg, index) => (
             <div key={`${msg.timestamp.seconds}-${msg.sender}-${index}`}
 >
@@ -124,10 +141,11 @@ sendMessage(messageText, user1?.uid, user2?.uid);
         </div>
 
         {/* ✅ INPUT */}
-        <form
-          onSubmit={handleSendMessage}
-          className="flex items-center m-4 bg-white p-3  shadow "
-        >
+      <form
+  onSubmit={handleSendMessage}
+  className="sticky bottom-0 w-full flex items-center bg-white p-3 shadow-md"
+>
+
           <input
             value={messageText}
             onChange={(e) => sendMessageText(e.target.value)}
